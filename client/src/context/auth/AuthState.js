@@ -1,8 +1,8 @@
 import React, { useReducer } from 'react';
 import axios from 'axios';
-import setAuthToken from '../../utils/setAuthToken';
 import AuthContext from './authContext';
-import AuthReducer from './authReducer';
+import authReducer from './authReducer';
+import setAuthToken from '../../utils/setAuthToken';
 import {
     REGISTER_SUCCESS,
     REGISTER_FAIL,
@@ -16,36 +16,34 @@ import {
 
 const AuthState = props => {
     const initialState = {
-        user: null,
         token: localStorage.getItem('token'),
         isAuthenticated: null,
         loading: true,
+        user: null,
         error: null
     };
 
-    const [state, dispatch] = useReducer(AuthReducer, initialState);
+    const [state, dispatch] = useReducer(authReducer, initialState);
 
-    // Load user
+    // Load User
     const loadUser = async () => {
-        // load token into default headers
         if (localStorage.token) {
-            setAuthToken(localStorage.token)
+            setAuthToken(localStorage.token);
         }
 
         try {
             const res = await axios.get('/api/auth');
+
             dispatch({
                 type: USER_LOADED,
                 payload: res.data
             });
         } catch (err) {
-            dispatch({
-                type: AUTH_ERROR
-            });
+            dispatch({ type: AUTH_ERROR });
         }
     };
 
-    // Register user
+    // Register User
     const register = async formData => {
         const config = {
             headers: {
@@ -55,6 +53,7 @@ const AuthState = props => {
 
         try {
             const res = await axios.post('/api/users', formData, config);
+
             dispatch({
                 type: REGISTER_SUCCESS,
                 payload: res.data
@@ -69,7 +68,7 @@ const AuthState = props => {
         }
     };
 
-    // Login user
+    // Login User
     const login = async formData => {
         const config = {
             headers: {
@@ -79,6 +78,7 @@ const AuthState = props => {
 
         try {
             const res = await axios.post('/api/auth', formData, config);
+
             dispatch({
                 type: LOGIN_SUCCESS,
                 payload: res.data
@@ -94,28 +94,29 @@ const AuthState = props => {
     };
 
     // Logout
-    const logout =() => dispatch({ type: LOGOUT });
+    const logout = () => dispatch({ type: LOGOUT });
 
-    // Clear errors
-    const clearErrors =() => dispatch({ type: CLEAR_ERRORS });
+    // Clear Errors
+    const clearErrors = () => dispatch({ type: CLEAR_ERRORS });
 
     return (
         <AuthContext.Provider
             value={{
-                user: state.user,
                 token: state.token,
                 isAuthenticated: state.isAuthenticated,
                 loading: state.loading,
+                user: state.user,
                 error: state.error,
                 register,
                 loadUser,
                 login,
                 logout,
                 clearErrors
-            }}>
-            { props.children }
+            }}
+        >
+            {props.children}
         </AuthContext.Provider>
-    )
+    );
 };
 
 export default AuthState;
