@@ -24,6 +24,6 @@
   },
   "devDependencies": {
     "concurrently": "^5.0.0",
-    "nodemon": "^1.19.3"
+    "nodemon": "^2.0.20"
   }
 }
